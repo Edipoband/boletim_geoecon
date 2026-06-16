@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Boletim · Geologia Econômica</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,600;9..144,700&family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.4/chart.umd.min.js"></script>
+<style>
+:root{--bg:#EEE8DA;--paper:#FAF6EC;--ink:#29271F;--muted:#8A8070;--line:#DDD5C0;--rust:#B0502A;--ochre:#C08C2A;--sage:#5A7A5A;--slate:#3A4838}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{-webkit-font-smoothing:antialiased}
+body{font-family:'Inter',system-ui,sans-serif;font-size:15px;line-height:1.55;color:var(--ink);background:var(--bg);min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:28px 16px}
+.hidden{display:none!important}
+
+/* login */
+#login{width:100%;max-width:440px;background:var(--paper);border:1px solid var(--line);border-radius:2px;overflow:hidden;box-shadow:0 20px 48px -16px rgba(41,39,31,.28);display:flex}
+.stripe{width:14px;flex-shrink:0;background:linear-gradient(to bottom,var(--sage) 0% 14%,#C8B88A 14% 28%,var(--ochre) 28% 44%,#9A8060 44% 57%,var(--rust) 57% 72%,var(--slate) 72% 85%,#C8B88A 85% 100%)}
+.login-body{padding:40px 36px 36px;flex:1}
+.eyebrow{font-family:'JetBrains Mono',monospace;font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);margin-bottom:10px}
+.login-body h1{font-family:'Fraunces',serif;font-size:26px;font-weight:600;color:var(--slate);margin-bottom:6px;line-height:1.2}
+.login-body .sub{font-size:14px;color:var(--muted);margin-bottom:28px;line-height:1.55}
+label{display:block;font-size:12.5px;font-weight:600;letter-spacing:.04em;color:var(--ink);margin-bottom:7px;text-transform:uppercase}
+input[type="text"]{display:block;width:100%;font-family:'JetBrains Mono',monospace;font-size:17px;letter-spacing:.04em;padding:11px 13px;border:1.5px solid var(--line);border-radius:2px;background:#fff;color:var(--ink);margin-bottom:14px;transition:border-color .15s}
+input[type="text"]:focus-visible{outline:none;border-color:var(--sage)}
+.btn-primary{width:100%;font-family:'Inter',sans-serif;font-weight:600;font-size:14px;letter-spacing:.02em;padding:12px;border:none;border-radius:2px;background:var(--slate);color:#FAF6EC;cursor:pointer;transition:background .15s,opacity .15s}
+.btn-primary:hover{background:#4A5B48}
+.btn-primary:disabled{opacity:.55;cursor:default}
+.error-msg{min-height:20px;margin-top:11px;font-size:13px;color:var(--rust);font-weight:500}
+
+/* dashboard */
+#dash{width:100%;max-width:900px;background:var(--paper);border:1px solid var(--line);border-radius:2px;box-shadow:0 20px 48px -16px rgba(41,39,31,.28);overflow:hidden}
+.dash-head{display:flex;align-items:flex-start;justify-content:space-between;gap:16px;padding:28px 36px 22px;border-bottom:1px solid var(--line);background:linear-gradient(180deg,rgba(90,122,90,.07) 0%,transparent 100%)}
+.dash-head h2{font-family:'Fraunces',serif;font-size:24px;font-weight:600;color:var(--slate);margin:4px 0 3px;line-height:1.2}
+.dash-head .usp-tag{font-family:'JetBrains Mono',monospace;font-size:12px;color:var(--muted)}
+.btn-ghost{font-family:'Inter',sans-serif;font-size:13px;font-weight:500;padding:7px 15px;border:1px solid var(--line);border-radius:2px;background:transparent;color:var(--muted);cursor:pointer;white-space:nowrap;transition:background .15s,color .15s;flex-shrink:0}
+.btn-ghost:hover{background:var(--line);color:var(--ink)}
+.dash-body{display:grid;grid-template-columns:1fr 1.35fr;gap:0}
+.panel{padding:26px 32px 30px}
+.panel+.panel{border-left:1px solid var(--line)}
+.panel-title{font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.18em;color:var(--muted);margin-bottom:18px}
+table{width:100%;border-collapse:collapse}
+thead th{font-size:10.5px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);font-weight:600;border-bottom:1px solid var(--line);padding-bottom:7px;text-align:left}
+thead th:last-child{text-align:right}
+tbody tr td{padding:9px 0;border-bottom:1px solid var(--line);font-size:14px;vertical-align:middle}
+tbody tr:last-child td{border-bottom:none}
+td.td-name{color:var(--ink);font-weight:500;padding-right:8px}
+td.td-bar{width:42%;padding:9px 12px 9px 0}
+td.td-nota{text-align:right;font-family:'JetBrains Mono',monospace;font-size:13.5px;font-weight:600;width:44px}
+.bar-track{height:7px;background:var(--line);border-radius:2px;overflow:hidden}
+.bar-fill{height:100%;border-radius:2px}
+.tag-vazio{color:var(--muted);font-style:italic;font-size:13px}
+.tag-plagio{color:var(--rust);font-weight:700;font-size:12px;letter-spacing:.05em;text-transform:uppercase}
+.chart-box{background:#fff;border:1px solid var(--line);border-radius:2px;padding:14px;height:260px}
+.legend{display:flex;gap:14px;margin-top:14px;flex-wrap:wrap}
+.legend-item{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--muted)}
+.legend-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.stats-row{display:flex;gap:10px;padding:14px 32px;border-top:1px solid var(--line)}
+.stat-chip{flex:1;text-align:center;padding:10px 8px;background:var(--bg);border-radius:2px}
+.stat-chip .stat-val{font-family:'JetBrains Mono',monospace;font-size:18px;font-weight:600;color:var(--slate);display:block}
+.stat-chip .stat-lbl{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}
+
+@media(max-width:680px){
+  .dash-body{grid-template-columns:1fr}
+  .panel+.panel{border-left:none;border-top:1px solid var(--line)}
+  .panel{padding:22px 20px}
+  .dash-head{padding:22px 20px 16px}
+  .stats-row{padding:12px 20px}
+  .login-body{padding:32px 24px 28px}
+}
+</style>
+</head>
+<body>
+
+<div id="login">
+  <div class="stripe" aria-hidden="true"></div>
+  <div class="login-body">
+    <p class="eyebrow">Geologia Econômica · IGc-USP</p>
+    <h1>Boletim de Atividades</h1>
+    <p class="sub">Insira seu número USP para consultar suas notas e o desempenho ao longo do semestre.</p>
+    <form id="form-login" autocomplete="off" novalidate>
+      <label for="usp-input">Número USP</label>
+      <input type="text" id="usp-input" inputmode="numeric" placeholder="ex: 12345678" maxlength="12">
+      <button class="btn-primary" type="submit" id="btn-entrar">Entrar</button>
+      <p class="error-msg" id="login-erro" role="alert" aria-live="polite"></p>
+    </form>
+  </div>
+</div>
+
+<div id="dash" class="hidden">
+  <div class="dash-head">
+    <div>
+      <p class="eyebrow">Geologia Econômica · IGc-USP</p>
+      <h2 id="d-nome">—</h2>
+      <p class="usp-tag" id="d-usp">USP —</p>
+    </div>
+    <button class="btn-ghost" id="btn-sair">Sair</button>
+  </div>
+  <div class="dash-body">
+    <div class="panel">
+      <p class="panel-title">Notas por atividade</p>
+      <table>
+        <thead><tr><th>Atividade</th><th style="width:40%"></th><th>Nota</th></tr></thead>
+        <tbody id="tbody-notas"></tbody>
+      </table>
+      <div class="legend" style="margin-top:16px">
+        <span class="legend-item"><span class="legend-dot" style="background:var(--rust)"></span>Abaixo de 7</span>
+        <span class="legend-item"><span class="legend-dot" style="background:var(--ochre)"></span>7 – 8,5</span>
+        <span class="legend-item"><span class="legend-dot" style="background:var(--sage)"></span>Acima de 8,5</span>
+      </div>
+    </div>
+    <div class="panel">
+      <p class="panel-title">Evolução das notas</p>
+      <div class="chart-box"><canvas id="canvas-chart"></canvas></div>
+    </div>
+  </div>
+  <div class="stats-row" id="stats-row"></div>
+</div>
+
+<script>
+// ═══════════════════════════════════════════════════════════
+//  Cole aqui a URL gerada pelo Apps Script (termina em /exec)
+// ═══════════════════════════════════════════════════════════
+const SCRIPT_URL = https://script.google.com/macros/s/AKfycbz_4Fa-qm7HOdrGK232ZofIqg5T78j5_gpfMYNbxxxhr-eqwK2gPgltOb6k9Ac47ZbD/exec;
+// ═══════════════════════════════════════════════════════════
+
+let chart = null;
+
+function corNota(n){
+  const rust=[176,80,42],ochre=[192,140,42],sage=[90,122,90];
+  let a,b,t;
+  if(n<=7){a=rust;b=ochre;t=Math.max(0,n)/7}
+  else{a=ochre;b=sage;t=(n-7)/3}
+  t=Math.min(1,Math.max(0,t));
+  const rgb=a.map((v,i)=>Math.round(v+(b[i]-v)*t));
+  return`rgb(${rgb[0]},${rgb[1]},${rgb[2]})`;
+}
+function fmtNota(n){
+  if(n===null||n===undefined)return"—";
+  if(n==="plagio")return"Plágio";
+  return Number.isInteger(n)?String(n):n.toFixed(1).replace(".",",");
+}
+
+const formLogin=document.getElementById("form-login");
+const erroEl=document.getElementById("login-erro");
+const btnEntrar=document.getElementById("btn-entrar");
+
+formLogin.addEventListener("submit",function(e){
+  e.preventDefault();
+  const usp=document.getElementById("usp-input").value.trim();
+  erroEl.textContent="";
+  if(!usp){erroEl.textContent="Digite seu número USP.";return}
+  btnEntrar.disabled=true;
+  btnEntrar.textContent="Consultando...";
+  fetch(SCRIPT_URL+"?usp="+encodeURIComponent(usp))
+    .then(r=>{if(!r.ok)throw new Error();return r.json()})
+    .then(d=>{if(d.erro){erroEl.textContent=d.erro}else{abrirDash(d)}})
+    .catch(()=>{erroEl.textContent="Não foi possível conectar ao servidor. Tente novamente."})
+    .finally(()=>{btnEntrar.disabled=false;btnEntrar.textContent="Entrar"});
+});
+
+document.getElementById("btn-sair").addEventListener("click",function(){
+  if(chart){chart.destroy();chart=null}
+  document.getElementById("usp-input").value="";
+  document.getElementById("dash").classList.add("hidden");
+  document.getElementById("login").classList.remove("hidden");
+});
+
+function abrirDash(dados){
+  document.getElementById("d-nome").textContent=dados.nome;
+  document.getElementById("d-usp").textContent="Nº USP "+dados.usp;
+  const atividades=dados.atividades;
+  const notas=dados.notas;
+
+  // tabela
+  const tbody=document.getElementById("tbody-notas");
+  tbody.innerHTML="";
+  atividades.forEach((atv,i)=>{
+    const nota=notas[i];
+    const tr=document.createElement("tr");
+    const tdNome=document.createElement("td");
+    tdNome.className="td-name";tdNome.textContent=atv;tr.appendChild(tdNome);
+    const tdBar=document.createElement("td");tdBar.className="td-bar";
+    if(typeof nota==="number"){
+      const pct=Math.min(100,Math.max(0,(nota/10)*100)).toFixed(1);
+      tdBar.innerHTML=`<div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${corNota(nota)}"></div></div>`;
+    }else{tdBar.innerHTML=`<div class="bar-track"></div>`}
+    tr.appendChild(tdBar);
+    const tdNota=document.createElement("td");tdNota.className="td-nota";
+    if(nota===null||nota===undefined){tdNota.innerHTML=`<span class="tag-vazio">—</span>`}
+    else if(nota==="plagio"){tdNota.innerHTML=`<span class="tag-plagio">⚑ Plágio</span>`}
+    else{tdNota.textContent=fmtNota(nota);tdNota.style.color=corNota(nota)}
+    tr.appendChild(tdNota);
+    tbody.appendChild(tr);
+  });
+
+  // chips
+  const num=notas.filter(n=>typeof n==="number");
+  const media=num.length?(num.reduce((a,b)=>a+b,0)/num.length):null;
+  const melhor=num.length?Math.max(...num):null;
+  const statsRow=document.getElementById("stats-row");statsRow.innerHTML="";
+  [{val:num.length+" / "+atividades.length,lbl:"Atividades entregues"},
+   {val:media!==null?fmtNota(media):"—",lbl:"Média até agora"},
+   {val:melhor!==null?fmtNota(melhor):"—",lbl:"Melhor nota"}]
+  .forEach(c=>{
+    const div=document.createElement("div");div.className="stat-chip";
+    div.innerHTML=`<span class="stat-val">${c.val}</span><span class="stat-lbl">${c.lbl}</span>`;
+    statsRow.appendChild(div);
+  });
+
+  // gráfico
+  if(chart)chart.destroy();
+  const vals=notas.map(n=>typeof n==="number"?n:null);
+  chart=new Chart(document.getElementById("canvas-chart"),{
+    type:"line",
+    data:{
+      labels:atividades,
+      datasets:[{
+        data:vals,spanGaps:false,
+        borderColor:"#5A7A5A",backgroundColor:"rgba(90,122,90,0.10)",
+        pointBackgroundColor:vals.map(v=>v!==null?corNota(v):"transparent"),
+        pointBorderColor:vals.map(v=>v!==null?corNota(v):"transparent"),
+        pointRadius:5,pointHoverRadius:7,tension:0.28,fill:true,borderWidth:2
+      }]
+    },
+    options:{
+      responsive:true,maintainAspectRatio:false,
+      plugins:{
+        legend:{display:false},
+        tooltip:{callbacks:{label:ctx=>ctx.raw!==null?"Nota: "+fmtNota(ctx.raw):"Não entregue"}}
+      },
+      scales:{
+        y:{min:0,max:10,ticks:{stepSize:2,font:{family:"'JetBrains Mono'"}},grid:{color:"rgba(0,0,0,.06)"}},
+        x:{grid:{display:false},ticks:{font:{size:11}}}
+      }
+    }
+  });
+
+  document.getElementById("login").classList.add("hidden");
+  document.getElementById("dash").classList.remove("hidden");
+}
+</script>
+</body>
+</html>
