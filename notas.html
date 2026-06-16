@@ -147,6 +147,16 @@ const formLogin=document.getElementById("form-login");
 const erroEl=document.getElementById("login-erro");
 const btnEntrar=document.getElementById("btn-entrar");
 
+// JSONP — evita bloqueio de CORS causado pelo redirecionamento do Apps Script
+function jsonp(url,cb){
+  const fn="__cb"+Date.now();
+  const s=document.createElement("script");
+  window[fn]=function(data){delete window[fn];if(s.parentNode)s.parentNode.removeChild(s);cb(null,data)};
+  s.onerror=function(){delete window[fn];if(s.parentNode)s.parentNode.removeChild(s);cb(new Error())};
+  s.src=url+"&callback="+fn;
+  document.head.appendChild(s);
+}
+
 formLogin.addEventListener("submit",function(e){
   e.preventDefault();
   const usp=document.getElementById("usp-input").value.trim();
@@ -154,11 +164,12 @@ formLogin.addEventListener("submit",function(e){
   if(!usp){erroEl.textContent="Digite seu número USP.";return}
   btnEntrar.disabled=true;
   btnEntrar.textContent="Consultando...";
-  fetch(SCRIPT_URL+"?usp="+encodeURIComponent(usp))
-    .then(r=>{if(!r.ok)throw new Error();return r.json()})
-    .then(d=>{if(d.erro){erroEl.textContent=d.erro}else{abrirDash(d)}})
-    .catch(()=>{erroEl.textContent="Não foi possível conectar ao servidor. Tente novamente."})
-    .finally(()=>{btnEntrar.disabled=false;btnEntrar.textContent="Entrar"});
+  jsonp(SCRIPT_URL+"?usp="+encodeURIComponent(usp),function(err,d){
+    btnEntrar.disabled=false;btnEntrar.textContent="Entrar";
+    if(err){erroEl.textContent="Não foi possível conectar ao servidor. Tente novamente.";return}
+    if(d.erro){erroEl.textContent=d.erro;return}
+    abrirDash(d);
+  });
 });
 
 document.getElementById("btn-sair").addEventListener("click",function(){
